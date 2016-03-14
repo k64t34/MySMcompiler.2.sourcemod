@@ -1,0 +1,5 @@
+c:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\obj\x86\Debug\ResolveAssemblyReference.cache
+c:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\bin\Debug\MySMcompiler2.exe
+c:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\bin\Debug\MySMcompiler2.pdb
+c:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\obj\x86\Debug\MySMcompiler2.exe
+c:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\obj\x86\Debug\MySMcompiler2.pdb
