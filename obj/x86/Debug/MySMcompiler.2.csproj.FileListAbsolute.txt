@@ -3,3 +3,8 @@ c:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\bin\Debug\MySMc
 c:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\bin\Debug\MySMcompiler2.pdb
 c:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\obj\x86\Debug\MySMcompiler2.exe
 c:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\obj\x86\Debug\MySMcompiler2.pdb
+C:\Users\skorik\Documents\SourceMod\MySMcompiler.2\bin\Debug\MySMcompiler2.exe
+C:\Users\skorik\Documents\SourceMod\MySMcompiler.2\bin\Debug\MySMcompiler2.pdb
+C:\Users\skorik\Documents\SourceMod\MySMcompiler.2\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\skorik\Documents\SourceMod\MySMcompiler.2\obj\x86\Debug\MySMcompiler2.exe
+C:\Users\skorik\Documents\SourceMod\MySMcompiler.2\obj\x86\Debug\MySMcompiler2.pdb
