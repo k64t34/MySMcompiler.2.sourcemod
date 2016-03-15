@@ -1,6 +1,7 @@
 ﻿//EXT1 - Изменить проверку файла, если указан не полный путь к файлу а тольк имя
 //EXT2 - Включить в ScriptFinish сообщение и код возврата
 //EXT3 - Рекурсивный поиск INI файла вверх и в стороны.
+//EXT4 - Проверять расширения
 //
 //->Доступ к файлам сервера по FTP
 /*
@@ -26,12 +27,13 @@ namespace MySMcompiler
 		//Global 
 		static string mySMcomp_Folder; //Gets the directory where the application is stored.	
 		static string SourceFile; //Source programm file .sp
-		static string SourceFolder;
+		static string SourceFolder;//Path to source programm file .sp
 		static string INIFile="smcmphlp.ini"; //INI file
+		static string PluginFolder; //Base project folder with .git 
 		static string INIFolder; //path INI file		
 		//Ini file fields
 		static string Compilator = "spcomp.exe";
-		static string Compilator_Folder="c:\\Users\\skorik\\Documents\\SourceMod\\smK64t\\sourcemod-1.7.3-git5301\\";
+		static string Compilator_Folder;
 		static string Compilator_Params = "vasym=\"1\" -O2";
 		static string Compilator_Include_Folders = "smk64t\\include";				
 		static string Plugin_Author;
@@ -39,7 +41,7 @@ namespace MySMcompiler
 		static int rcon_Port = 27015;
 		static string rcon_password;		
 		static string SRCDS_Folder;
-		static string SMXFolder;
+		static string SMXFolder="addons\\sourcemod\\plugins\\";
 		
  
 		public static void Main(string[] args)
@@ -65,8 +67,7 @@ namespace MySMcompiler
 			Console.Title = Console.Title + " " + args[0] + " ";// + DateAndTime.Now;
 			SourceFile = args[0];			
 			Debug.Print("SourceFile=" + SourceFile);
-			Console.WriteLine("Source file \t"+ SourceFile);
-			
+			Console.WriteLine("Source file \t"+ SourceFile);	
 			
 			//EXT1
 			if (!File.Exists(SourceFile))
@@ -78,9 +79,18 @@ namespace MySMcompiler
 			
 			SourceFolder=System.IO.Directory.GetParent(SourceFile).ToString()+"\\";
 			SourceFile =Path.GetFileNameWithoutExtension(SourceFile);
+			//EXT4
+			Console.WriteLine("Source file \t"+ SourceFile+".sp");
 			Console.WriteLine("Source folder \t"+ SourceFolder);
 			//EXT3
-			INIFolder=SourceFolder;
+			//Поиск INI вверх по 3-ум способам:
+			// 1 просто прыгнуть вверх на пару папок
+			// 2 искать папку содежащую .git или addon			
+			INIFolder=System.IO.Directory.GetParent(SourceFolder).ToString();
+			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
+			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();			
+			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
+			PluginFolder=INIFolder;
 			INIFile=INIFolder+"\\"+INIFile;
 			if (!File.Exists(INIFile))
 			{
@@ -119,12 +129,11 @@ namespace MySMcompiler
 			f_inc.WriteLine("#endif");
 			f_inc.WriteLine("#if !defined PLUGIN_AUTHOR");
 			f_inc.WriteLine("\t#define PLUGIN_AUTHOR \"" + Plugin_Author + "\"");
-			f_inc.WriteLine("#endif");
-	
+			f_inc.WriteLine("#endif");	
 			f_inc.Close();
 			//Delete old err smx files				
 			if (!File.Exists(SourceFile+".err"))File.Delete(SourceFile+".err");
-			if (!File.Exists(SMXFolder+SourceFile+".smx"))File.Delete(SMXFolder+SourceFile+".smx");	
+			if (File.Exists(PluginFolder+SMXFolder+SourceFile+".smx"))File.Delete(PluginFolder+SMXFolder+SourceFile+".smx");
 			
 			//Test compiler file exist
 			if (!File.Exists(Compilator_Folder + Compilator)) 
@@ -162,6 +171,7 @@ namespace MySMcompiler
 	        	catch (Exception e)
 	        	{
 	        	    Console.WriteLine("The file {0} could not be read",SourceFile+".err");
+	        	    Console.WriteLine(e.Message);
 	        	}							
 				
 				ScriptFinish(true);
@@ -189,7 +199,11 @@ namespace MySMcompiler
 	public static void GetConfigFile(string ConfigFile)
 	{
 
-		IniParser INI = new IniParser(ConfigFile);
+		IniParser inifile = new IniParser(ConfigFile);
+		Compilator_Folder = inifile.ReadString("Compiler", "Compilator_Folder", PluginFolder+"smk64t\\sourcemod-1.7.3-git5301");
+		
+		//CheckFolderString(Compilator_Folder); поставить в конце /
+		
 		/*if (!String.IsNullOrEmpty(ConfigFile)) {			
 			//http://msdn.microsoft.com/en-us/library/system.string.isnullorempty.aspx
 			Console.WriteLine("INF: Use ini file " + ConfigFile);
@@ -205,7 +219,7 @@ namespace MySMcompiler
 			rcon_password = inifile.LoadString("Server", "rcon_password", rcon_password);
 			Plugin_Author = inifile.LoadString("Compiler", "Plugin_Author", "");
 
-		}
+		}*/
 		Debug.Print("Compilator\t\t=" + Compilator);
 		Debug.Print("Compilator_Folder\t=" + Compilator_Folder);
 		Debug.Print("Compilator_Params\t=" + Compilator_Params);
@@ -213,7 +227,7 @@ namespace MySMcompiler
 		Debug.Print("SRCDS_Folder=" + SRCDS_Folder);
 		Debug.Print("rcon_address=" + rcon_Address);
 		Debug.Print("rcon_port=" + rcon_Port);
-		Debug.Print("rcon_password=" + rcon_password);*/
+		Debug.Print("rcon_password=" + rcon_password);
 
 		//[Compiler]
 		//Compilator="spcomp.exe"

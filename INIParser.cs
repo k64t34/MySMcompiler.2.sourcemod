@@ -1,34 +1,34 @@
-//http://stackoverflow.com/questions/217902/reading-writing-an-ini-file
 using System;
-using System.IO;
-using System.Collections;
-
+using System.Runtime.InteropServices;
+using System.Text;
+ 
 public class IniParser
 {
-	private Hashtable keyPairs = new Hashtable();
-    private String iniFilePath;
-
-    private struct SectionPair
+    [DllImport("kernel32.dll")]
+    private static extern int WritePrivateProfileString(string ApplicationName, string KeyName, string StrValue, string FileName);
+    [DllImport("kernel32.dll")]
+    private static extern int GetPrivateProfileString(string ApplicationName, string KeyName, string DefaultValue, StringBuilder ReturnString, int nSize, string FileName);
+    
+    private static String INIFile;
+	
+    public IniParser(String iniPath)
     {
-        public String Section;
-        public String Key;
+    	INIFile=iniPath;
     }
-	public IniParser(String iniPath)
+ 
+    public static void WriteValue(string SectionName , string KeyName, string KeyValue)
     {
-	TextReader iniFile = null;
-	String strLine = null;
-	String currentRoot = null;
-	String[] keyPair = null;
-
-	iniFilePath = iniPath;	
-	}
-	public String GetSetting(String sectionName, String settingName)
-    {
-        SectionPair sectionPair;
-        sectionPair.Section = sectionName.ToUpper();
-        sectionPair.Key = settingName.ToUpper();
-
-        return (String)keyPairs[sectionPair];
+        WritePrivateProfileString(SectionName , KeyName, KeyValue, INIFile);
     }
-
-}	
+ 
+    public static string ReadValue(string SectionName , string KeyName)
+    {
+        StringBuilder szStr = new StringBuilder(255);
+        GetPrivateProfileString(SectionName, KeyName, "" , szStr, 255, INIFile);
+        return szStr.ToString().Trim();
+    }
+    public String ReadString(String SectionName , String KeyName, String DefaultValue)
+    {
+        return ReadValue(SectionName , KeyName);
+    }
+}
