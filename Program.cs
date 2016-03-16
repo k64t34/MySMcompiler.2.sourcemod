@@ -35,7 +35,7 @@ namespace MySMcompiler
 		static string Compilator = "spcomp.exe";
 		static string Compilator_Folder;
 		static string Compilator_Params = "vasym=\"1\" -O2";
-		static string Compilator_Include_Folders = "smk64t\\include";				
+		static string Compilator_Include_Folders = "smk64t\\scripting\\include";				
 		static string Plugin_Author;
 		static string rcon_Address = "127.0.0.1";
 		static int rcon_Port = 27015;
@@ -67,7 +67,7 @@ namespace MySMcompiler
 			Console.Title = Console.Title + " " + args[0] + " "+DateTime.Now.ToString();
 			SourceFile = args[0];			
 			Debug.Print("SourceFile=" + SourceFile);
-			Console.WriteLine("Source file \t"+ SourceFile);	
+			Console.WriteLine("Argumets \t"+ SourceFile);	
 			
 			//EXT1
 			if (!File.Exists(SourceFile))
@@ -95,6 +95,7 @@ namespace MySMcompiler
 			CheckFolderString(ref INIFolder);
 			Debug.Print("INIFolder=" + INIFolder);
 			PluginFolder=INIFolder;
+			Console.WriteLine("Plugin Folder\t"+ PluginFolder);
 			INIFile=INIFolder+INIFile;
 			if (!File.Exists(INIFile))
 			{
@@ -113,7 +114,7 @@ namespace MySMcompiler
 				if (!String.IsNullOrEmpty(s)) 
 					{
 					Console.WriteLine(s);
-					Compilator_Include_Folders = Compilator_Include_Folders + " -i" + Compilator_Folder + s.Trim();
+					Compilator_Include_Folders +=" -i" + s.Trim();
 					}
 			}
 			//
@@ -151,9 +152,19 @@ namespace MySMcompiler
 		
 			Process compiler = new Process();
 			compiler.StartInfo.FileName = Compilator_Folder + Compilator;
-			compiler.StartInfo.Arguments = SourceFolder + SourceFile + ".sp " + Compilator_Params + " -e" + SourceFile + ".err" + " -D" + SourceFolder + " -o" + SMXFolder + SourceFile + " -w213" + Compilator_Include_Folders;
-			Console.WriteLine(compiler.StartInfo.FileName + " " + compiler.StartInfo.Arguments);
-				
+			compiler.StartInfo.UseShellExecute=false;	//https://msdn.microsoft.com/ru-ru/library/system.diagnostics.processstartinfo.workingdirectory(v=vs.110).aspx
+			compiler.StartInfo.WorkingDirectory=PluginFolder;
+			string DiffSourceFolder=FolderDifference(SourceFolder,PluginFolder);
+			compiler.StartInfo.Arguments =
+				DiffSourceFolder + SourceFile + ".sp " +
+				Compilator_Params + " -e" + DiffSourceFolder+SourceFile + ".err" + 
+				" -D" + PluginFolder + 
+				" -o" + SMXFolder + SourceFile + 
+				" -w213" +
+				Compilator_Include_Folders;
+			
+			Console.WriteLine(compiler.StartInfo.FileName);				
+			Console.WriteLine(compiler.StartInfo.Arguments);				
 			compiler.StartInfo.UseShellExecute = false;
 			compiler.StartInfo.RedirectStandardOutput = true;
 			compiler.Start();
@@ -205,11 +216,14 @@ namespace MySMcompiler
 
 		IniParser inifile = new IniParser(ConfigFile);
 		Compilator_Folder = inifile.ReadString("Compiler", "Compilator_Folder", PluginFolder+"smk64t\\sourcemod-1.7.3-git5301");
-		CheckFolderString(ref Compilator_Folder); 
-		
+		CheckFolderString(ref Compilator_Folder);		
 		//Если Compilator_Folder не содержит в начале строки ?:\ или \ или \\, то дополнить путь PluginFolder
 		Compilator_Folder=PluginFolder+Compilator_Folder;
 		
+		Plugin_Author = inifile.ReadString("Compiler", "Plugin_Author","");
+		rcon_password = inifile.ReadString("Server", "rcon_password","");
+		SRCDS_Folder = inifile.ReadString("Server", "SRCDS_Folder","");		
+		Compilator_Include_Folders = inifile.ReadString("Compiler", "Include", Compilator_Include_Folders);
 		
 		
 		
@@ -264,6 +278,13 @@ namespace MySMcompiler
 		if (!s.EndsWith("\\")) s+="\\";
 		if (!s.StartsWith("\\") & !s.StartsWith("\\\\") & s.Substring(1,2)!=":\\") s=basepath+s;
 		
+	}
+	public static string FolderDifference(string Minuend  ,string Subtrahend)
+	{
+		if (Minuend.StartsWith(Subtrahend))
+			return Minuend.Substring(Subtrahend.Length);
+		else
+			return Minuend;
 	}
 
 	}
