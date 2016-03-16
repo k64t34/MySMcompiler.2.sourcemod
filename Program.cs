@@ -64,7 +64,7 @@ namespace MySMcompiler
 				ScriptFinish(true);
 				System.Environment.Exit(0);
 			}			
-			Console.Title = Console.Title + " " + args[0] + " ";// + DateAndTime.Now;
+			Console.Title = Console.Title + " " + args[0] + " "+DateTime.Now.ToString();
 			SourceFile = args[0];			
 			Debug.Print("SourceFile=" + SourceFile);
 			Console.WriteLine("Source file \t"+ SourceFile);	
@@ -78,7 +78,9 @@ namespace MySMcompiler
 			}			
 			
 			SourceFolder=System.IO.Directory.GetParent(SourceFile).ToString()+"\\";
+			CheckFolderString(ref SourceFolder);
 			SourceFile =Path.GetFileNameWithoutExtension(SourceFile);
+			Console.Title = SourceFile + ".sp "+DateTime.Now.ToString();
 			//EXT4
 			Console.WriteLine("Source file \t"+ SourceFile+".sp");
 			Console.WriteLine("Source folder \t"+ SourceFolder);
@@ -90,8 +92,10 @@ namespace MySMcompiler
 			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
 			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();			
 			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
+			CheckFolderString(ref INIFolder);
+			Debug.Print("INIFolder=" + INIFolder);
 			PluginFolder=INIFolder;
-			INIFile=INIFolder+"\\"+INIFile;
+			INIFile=INIFolder+INIFile;
 			if (!File.Exists(INIFile))
 			{
 				Console.WriteLine("INI File \t"+INIFile+" not found");
@@ -116,7 +120,7 @@ namespace MySMcompiler
 			//Create include file
 			//	
 			string curDate=DateTime.Now.ToString();
-			System.IO.StreamWriter f_inc = new System.IO.StreamWriter(SourceFolder + "datetimecomp.inc", true);
+			System.IO.StreamWriter f_inc = new System.IO.StreamWriter(SourceFolder + "datetimecomp.inc", false);
 			f_inc.WriteLine("#if defined DEBUG");
 			f_inc.WriteLine("\t#define PLUGIN_DATETIME \"" + curDate + "\"");
 			f_inc.WriteLine("\t#if defined PLUGIN_VERSION");
@@ -157,12 +161,12 @@ namespace MySMcompiler
 			compiler.WaitForExit();	
 			//ERRORLEVEL			
 			if (compiler.ExitCode > 0)
-			{
+			{				
 				Console.WriteLine(compiler.ExitCode);
-				Console.WriteLine(SourceFile+".err");
+				Console.WriteLine(SourceFolder+SourceFile+".err");
 				try 
 				{					
-			        using (StreamReader sr = new StreamReader(SourceFile+".err"))
+			        using (StreamReader sr = new StreamReader(SourceFolder+SourceFile+".err"))
 			        {
 	                String line = sr.ReadToEnd();
 	                Console.WriteLine(line);
@@ -170,7 +174,7 @@ namespace MySMcompiler
             	}        	
 	        	catch (Exception e)
 	        	{
-	        	    Console.WriteLine("The file {0} could not be read",SourceFile+".err");
+	        	    Console.WriteLine("The file could not be read"+SourceFolder+SourceFile+".err");
 	        	    Console.WriteLine(e.Message);
 	        	}							
 				
@@ -201,8 +205,13 @@ namespace MySMcompiler
 
 		IniParser inifile = new IniParser(ConfigFile);
 		Compilator_Folder = inifile.ReadString("Compiler", "Compilator_Folder", PluginFolder+"smk64t\\sourcemod-1.7.3-git5301");
+		CheckFolderString(ref Compilator_Folder); 
 		
-		//CheckFolderString(Compilator_Folder); поставить в конце /
+		//Если Compilator_Folder не содержит в начале строки ?:\ или \ или \\, то дополнить путь PluginFolder
+		Compilator_Folder=PluginFolder+Compilator_Folder;
+		
+		
+		
 		
 		/*if (!String.IsNullOrEmpty(ConfigFile)) {			
 			//http://msdn.microsoft.com/en-us/library/system.string.isnullorempty.aspx
@@ -243,5 +252,19 @@ namespace MySMcompiler
 		//SRCDS_FTP=
 
 	}
+	//*******************************************
+	public static void CheckFolderString(ref string s)	{
+	//*******************************************
+		s=s.Trim();
+		if (!s.EndsWith("\\")) s+="\\";
+	}
+	public static void CheckFolderString(ref string s,string basepath)
+	{
+		s=s.Trim();
+		if (!s.EndsWith("\\")) s+="\\";
+		if (!s.StartsWith("\\") & !s.StartsWith("\\\\") & s.Substring(1,2)!=":\\") s=basepath+s;
+		
+	}
+
 	}
 }
