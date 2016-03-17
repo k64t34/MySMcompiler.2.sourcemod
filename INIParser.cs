@@ -31,4 +31,13 @@ public class IniParser
     {
         return ReadValue(SectionName , KeyName);
     }
+    public int ReadInteger(String SectionName , String KeyName, int DefaultValue)
+    {
+    	int Result;
+    	string tmpStr=ReadValue(SectionName ,KeyName);
+    	if (!Int32.TryParse(tmpStr,out Result))
+    		Result=DefaultValue;
+     return Result;
+    }
+
 }

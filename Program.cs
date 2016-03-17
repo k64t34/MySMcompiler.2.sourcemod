@@ -40,7 +40,7 @@ namespace MySMcompiler
 		static string rcon_Address = "127.0.0.1";
 		static int rcon_Port = 27015;
 		static string rcon_password;		
-		static string SRCDS_Folder;
+		static string SRCDS_Folder;		
 		static string SMXFolder="addons\\sourcemod\\plugins\\";
 		
  
@@ -60,7 +60,7 @@ namespace MySMcompiler
 			//Parsing argumets
 			//
 			if (args.Length < 1) {
-				Console.WriteLine("Usage: MySMcompiler <path\file.sp>");
+				Console.WriteLine("Usage: MySMcompiler <path\\file.sp>");
 				ScriptFinish(true);
 				System.Environment.Exit(0);
 			}			
@@ -197,6 +197,7 @@ namespace MySMcompiler
 			// Copy to server
 			//
 					
+			
 			Console.WriteLine("Finish");
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
@@ -223,7 +224,9 @@ namespace MySMcompiler
 		Plugin_Author = inifile.ReadString("Compiler", "Plugin_Author","");
 		rcon_password = inifile.ReadString("Server", "rcon_password","");
 		SRCDS_Folder = inifile.ReadString("Server", "SRCDS_Folder","");		
+		rcon_Address = inifile.ReadString("Server", "rcon_Address","");		
 		Compilator_Include_Folders = inifile.ReadString("Compiler", "Include", Compilator_Include_Folders);
+		rcon_Port = inifile.ReadInteger("Server", "rcon_port", rcon_Port);
 		
 		
 		
