@@ -1,0 +1,3 @@
+C:\Users\skorik\Documents\SourceMod\MySMcompiler.2\bin\Release\MySMcompiler2.exe
+C:\Users\skorik\Documents\SourceMod\MySMcompiler.2\obj\x86\Release\ResolveAssemblyReference.cache
+C:\Users\skorik\Documents\SourceMod\MySMcompiler.2\obj\x86\Release\MySMcompiler2.exe

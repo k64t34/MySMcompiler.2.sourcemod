@@ -174,7 +174,7 @@ namespace MySMcompiler
 			if (compiler.ExitCode > 0)
 			{				
 				Console.WriteLine(compiler.ExitCode);
-				Console.WriteLine(SourceFolder+SourceFile+".err");
+				Console.WriteLine("ERR: "+SourceFolder+SourceFile+".err\n--------------------------------------------------------");
 				try 
 				{					
 			        using (StreamReader sr = new StreamReader(SourceFolder+SourceFile+".err"))
