@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading;
+using System.Reflection;
 
 
 namespace MySMcompiler
@@ -50,9 +51,11 @@ namespace MySMcompiler
  
 		public static void Main(string[] args)
 		{
-			Console.WriteLine("Compiler Helper v 0.1");
-			Console.WriteLine("Compiler shell for SourceMod plugins by k64t 2016");
-			Console.WriteLine("-------------------------------------------------");
+			string title="Sourcemod Compiler Helper ver"+(FileVersionInfo.GetVersionInfo((Assembly.GetExecutingAssembly()).Location)).ProductVersion+": ";
+			Console.Title=title;
+			Console.WriteLine(title);
+			Console.WriteLine("-------------------------------------------------");			
+
 			mySMcomp_Folder=AppDomain.CurrentDomain.BaseDirectory;
 			// or			
 			//Application.ExecutablePath;
@@ -68,7 +71,7 @@ namespace MySMcompiler
 				ScriptFinish(true);
 				System.Environment.Exit(0);
 			}			
-			Console.Title = Console.Title + " " + args[0] + " "+DateTime.Now.ToString();
+			Console.Title = title + " " + args[0] + " "+DateTime.Now.ToString();
 			SourceFile = args[0];			
 			Debug.Print("SourceFile=" + SourceFile);
 			Console.WriteLine("Argumets \t"+ SourceFile);	
@@ -84,7 +87,7 @@ namespace MySMcompiler
 			SourceFolder=System.IO.Directory.GetParent(SourceFile).ToString()+"\\";
 			CheckFolderString(ref SourceFolder);
 			SourceFile =Path.GetFileNameWithoutExtension(SourceFile);
-			Console.Title = SourceFile + ".sp "+DateTime.Now.ToString();
+			Console.Title = title + SourceFile + ".sp "+DateTime.Now.ToString();
 			//EXT4
 			Console.WriteLine("Source file \t"+ SourceFile+".sp");
 			Console.WriteLine("Source folder \t"+ SourceFolder);
