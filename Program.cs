@@ -53,8 +53,10 @@ namespace MySMcompiler
 		{
 			string title="Sourcemod Compiler Helper ver"+(FileVersionInfo.GetVersionInfo((Assembly.GetExecutingAssembly()).Location)).ProductVersion+": ";
 			Console.Title=title;
+			Console.ForegroundColor=ConsoleColor.Cyan;
 			Console.WriteLine(title);
 			Console.WriteLine("-------------------------------------------------");			
+			Console.ResetColor();
 
 			mySMcomp_Folder=AppDomain.CurrentDomain.BaseDirectory;
 			// or			
@@ -79,7 +81,9 @@ namespace MySMcompiler
 			//EXT1
 			if (!File.Exists(SourceFile))
 			{
+				Console.ForegroundColor=ConsoleColor.Red;
 				Console.WriteLine("ERR: File \t\t"+SourceFile+" not found");
+				Console.ResetColor();
 				ScriptFinish(true);
 				System.Environment.Exit(1);
 			}			
@@ -108,12 +112,18 @@ namespace MySMcompiler
 			INIFile=INIFolder+INIFile;
 			if (!File.Exists(INIFile))
 			{
+				Console.ForegroundColor=ConsoleColor.Red;
 				Console.WriteLine("ERR:INI File \t"+INIFile+" not found");
+				Console.ResetColor();
 				ScriptFinish(true);
 				System.Environment.Exit(2);
 			}	
 			Console.WriteLine("INI File \t"+ INIFile);
+			
+			Console.ForegroundColor=ConsoleColor.White;
 			Console.WriteLine("\nRead config\n");
+			Console.ResetColor();
+			
 			GetConfigFile(INIFile);			
 			//Parsing include from INI file
 			string[] Compilator_Include_Folder = Compilator_Include_Folders.Split(';');
@@ -153,13 +163,16 @@ namespace MySMcompiler
 			//Test compiler file exist
 			if (!File.Exists(Compilator_Folder + Compilator)) 
 			{
+				Console.ForegroundColor=ConsoleColor.Red;
 				Console.WriteLine("ERR: File compiler\t" + Compilator_Folder + Compilator + " not found");
+				Console.ResetColor();
 				ScriptFinish(true);
 				System.Environment.Exit(4);
 			}
 			//Compiling
+			Console.ForegroundColor=ConsoleColor.White;
 			Console.WriteLine("\nRun compiling\n");
-		
+			Console.ResetColor();
 			Process compiler = new Process();
 			compiler.StartInfo.FileName = Compilator_Folder + Compilator;
 			compiler.StartInfo.UseShellExecute=false;	//https://msdn.microsoft.com/ru-ru/library/system.diagnostics.processstartinfo.workingdirectory(v=vs.110).aspx
@@ -184,7 +197,9 @@ namespace MySMcompiler
 			if (compiler.ExitCode > 0)
 			{				
 				Console.WriteLine(compiler.ExitCode);
+				Console.ForegroundColor=ConsoleColor.Red;
 				Console.WriteLine("ERR: "+SourceFolder+SourceFile+".err\n--------------------------------------------------------");
+				Console.ResetColor();
 				try 
 				{					
 			        using (StreamReader sr = new StreamReader(SourceFolder+SourceFile+".err"))
@@ -195,8 +210,10 @@ namespace MySMcompiler
             	}        	
 	        	catch (Exception e)
 	        	{
+	        		Console.ForegroundColor=ConsoleColor.Red;
 	        	    Console.WriteLine("The file could not be read"+SourceFolder+SourceFile+".err");
 	        	    Console.WriteLine(e.Message);
+	        	    Console.ResetColor();
 	        	}
 	        	ScriptFinish(true);
 				System.Environment.Exit(0);
@@ -204,10 +221,14 @@ namespace MySMcompiler
 			//
 			// Copy to server
 			//
+			Console.ForegroundColor=ConsoleColor.White;
 			Console.WriteLine("\nCopy files to server {0}\n",SRCDS_Folder);
+			Console.ResetColor();
 		    if (!Directory.Exists(SRCDS_Folder)) 
 		    {
-				Console.WriteLine("ERR:Folder for copy smx file " + SRCDS_Folder + "not found");
+				Console.ForegroundColor=ConsoleColor.Red;
+		    	Console.WriteLine("ERR:Folder for copy smx file " + SRCDS_Folder + "not found");
+		    	Console.ResetColor();
 				ScriptFinish(true);
 				System.Environment.Exit(0);
 			}
@@ -215,7 +236,9 @@ namespace MySMcompiler
 			//
 			// Reload plugin
 			//   
+			Console.ForegroundColor=ConsoleColor.White;
 			Console.WriteLine("\nReload plugin {0} on server {1}:{2}\n",SourceFile,rcon_Address,rcon_Port);
+			Console.ResetColor();
 			SourceRcon.SourceRcon RCon = new SourceRcon.SourceRcon();
 			RCon.Errors += new SourceRcon.StringOutput(ErrorOutput);
 			RCon.ServerOutput += new SourceRcon.StringOutput(ConsoleOutput);
@@ -247,7 +270,9 @@ namespace MySMcompiler
 			}
 			else
 			{
-				Console.WriteLine("ERR: No connection.");			
+				Console.ForegroundColor=ConsoleColor.Red;
+				Console.WriteLine("ERR: No connection.");
+				Console.ResetColor();
 			}
 			Thread.Sleep(1000);	
 			RCon=null;
