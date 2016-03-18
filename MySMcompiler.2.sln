@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-# SharpDevelop 3.2.1.6466
+# SharpDevelop 4.4
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySMcompiler.2", "MySMcompiler.2.csproj", "{1D086F9C-74F1-45A4-8509-6DF7A64F63CE}"
 EndProject
 Global

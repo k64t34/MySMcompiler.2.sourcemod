@@ -1,4 +1,7 @@
-﻿//EXT1 - Изменить проверку файла, если указан не полный путь к файлу а тольк имя
+﻿// Добавить rcon консоль
+// дублировние  консоли ссервера
+
+//EXT1 - Изменить проверку файла, если указан не полный путь к файлу а тольк имя
 //EXT2 - Включить в ScriptFinish сообщение и код возврата
 //EXT3 - Рекурсивный поиск INI файла вверх и в стороны.
 //EXT4 - Проверять расширения
@@ -15,7 +18,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-
+using System.Net;
+using System.Threading;
 
 
 namespace MySMcompiler
@@ -41,14 +45,14 @@ namespace MySMcompiler
 		static int rcon_Port = 27015;
 		static string rcon_password;		
 		static string SRCDS_Folder;		
-		static string SMXFolder="addons\\sourcemod\\plugins\\";
+		static string SMXFolder="game\\addons\\sourcemod\\plugins\\";
 		
  
 		public static void Main(string[] args)
 		{
-			Console.WriteLine("My SourceMod Compiler Helper v 2.0");
-			Console.WriteLine("Compiler shell for SourceMod by Skorik 2016");
-			Console.WriteLine("-------------------------------------------");
+			Console.WriteLine("Compiler Helper v 0.1");
+			Console.WriteLine("Compiler shell for SourceMod plugins by k64t 2016");
+			Console.WriteLine("-------------------------------------------------");
 			mySMcomp_Folder=AppDomain.CurrentDomain.BaseDirectory;
 			// or			
 			//Application.ExecutablePath;
@@ -72,7 +76,7 @@ namespace MySMcompiler
 			//EXT1
 			if (!File.Exists(SourceFile))
 			{
-				Console.WriteLine("File \t\t"+SourceFile+" not found");
+				Console.WriteLine("ERR: File \t\t"+SourceFile+" not found");
 				ScriptFinish(true);
 				System.Environment.Exit(1);
 			}			
@@ -92,18 +96,21 @@ namespace MySMcompiler
 			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
 			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();			
 			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
-			CheckFolderString(ref INIFolder);
-			Debug.Print("INIFolder=" + INIFolder);
 			PluginFolder=INIFolder;
+			CheckFolderString(ref PluginFolder);
 			Console.WriteLine("Plugin Folder\t"+ PluginFolder);
+			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
+			CheckFolderString(ref INIFolder);
+			Debug.Print("INIFolder=" + INIFolder);					
 			INIFile=INIFolder+INIFile;
 			if (!File.Exists(INIFile))
 			{
-				Console.WriteLine("INI File \t"+INIFile+" not found");
+				Console.WriteLine("ERR:INI File \t"+INIFile+" not found");
 				ScriptFinish(true);
 				System.Environment.Exit(2);
 			}	
 			Console.WriteLine("INI File \t"+ INIFile);
+			Console.WriteLine("\nRead config\n");
 			GetConfigFile(INIFile);			
 			//Parsing include from INI file
 			string[] Compilator_Include_Folder = Compilator_Include_Folders.Split(';');
@@ -148,17 +155,17 @@ namespace MySMcompiler
 				System.Environment.Exit(4);
 			}
 			//Compiling
-			Console.WriteLine("\nCompiling\n");
+			Console.WriteLine("\nRun compiling\n");
 		
 			Process compiler = new Process();
 			compiler.StartInfo.FileName = Compilator_Folder + Compilator;
 			compiler.StartInfo.UseShellExecute=false;	//https://msdn.microsoft.com/ru-ru/library/system.diagnostics.processstartinfo.workingdirectory(v=vs.110).aspx
 			compiler.StartInfo.WorkingDirectory=PluginFolder;
-			string DiffSourceFolder=FolderDifference(SourceFolder,PluginFolder);
+			string DiffSourceFolder=FolderDifference(SourceFolder,INIFolder);
 			compiler.StartInfo.Arguments =
 				DiffSourceFolder + SourceFile + ".sp " +
 				Compilator_Params + " -e" + DiffSourceFolder+SourceFile + ".err" + 
-				" -D" + PluginFolder + 
+				" -D" + INIFolder + 
 				" -o" + SMXFolder + SourceFile + 
 				" -w213" +
 				Compilator_Include_Folders;
@@ -187,21 +194,69 @@ namespace MySMcompiler
 	        	{
 	        	    Console.WriteLine("The file could not be read"+SourceFolder+SourceFile+".err");
 	        	    Console.WriteLine(e.Message);
-	        	}							
-				
-				ScriptFinish(true);
-				System.Environment.Exit(5);
-			}			
-			
+	        	}
+	        	ScriptFinish(true);
+				System.Environment.Exit(0);
+			}	        
 			//
 			// Copy to server
 			//
-					
+			Console.WriteLine("\nCopy files to server {0}\n",SRCDS_Folder);
+		    if (!Directory.Exists(SRCDS_Folder)) 
+		    {
+				Console.WriteLine("ERR:Folder for copy smx file " + SRCDS_Folder + "not found");
+				ScriptFinish(true);
+				System.Environment.Exit(0);
+			}
+			CopyDirectory(PluginFolder, SRCDS_Folder);			
+			//
+			// Reload plugin
+			//   
+			Console.WriteLine("\nReload plugin {0} on server {1}:{2}\n",SourceFile,rcon_Address,rcon_Port);
+			SourceRcon.SourceRcon RCon = new SourceRcon.SourceRcon();
+			RCon.Errors += new SourceRcon.StringOutput(ErrorOutput);
+			RCon.ServerOutput += new SourceRcon.StringOutput(ConsoleOutput);
+			if (RCon.Connect(new IPEndPoint(IPAddress.Parse(rcon_Address), rcon_Port), rcon_password))
+			{
+				while(!RCon.Connected)
+				{
+					Thread.Sleep(10);
+				}
+				RCon.ServerCommand("status");
+				Thread.Sleep(100);
+				RCon.ServerCommand("sm plugins unload "+SourceFile);
+				Thread.Sleep(100);
+				RCon.ServerCommand("sm plugins load "+SourceFile);
+				Thread.Sleep(100);
+				Thread.Sleep(100);
+				/*Console.Write("Press Esc key to exit . . . ");			
+				ConsoleKeyInfo k=Console.ReadKey();
+				while (k.Key!= ConsoleKey.Escape)
+				{
+					k=Console.ReadKey();
+					RCon.ServerCommand(Console.ReadLine());
+					Console.ReadLine
+				}*/
+				/*while(true)
+				{
+				RCon.ServerCommand(Console.ReadLine());
+				}				*/
+			}
+			else
+			{
+				Console.WriteLine("ERR: No connection.");			
+			}
+			Thread.Sleep(1000);	
+			RCon=null;
+			ScriptFinish(true);
+			System.Environment.Exit(0);							
 			
-			Console.WriteLine("Finish");
-			Console.Write("Press any key to continue . . . ");
-			Console.ReadKey(true);
 		}
+		
+		
+	static void ErrorOutput(string input){			Console.WriteLine("Error: {0}", input);		}
+
+	static void ConsoleOutput(string input)	{			Console.WriteLine("Console: {0}", input);		}	
 	//****************************************************	
 	public static void ScriptFinish(bool pause){
 	//****************************************************			
@@ -216,14 +271,15 @@ namespace MySMcompiler
 	{
 
 		IniParser inifile = new IniParser(ConfigFile);
-		Compilator_Folder = inifile.ReadString("Compiler", "Compilator_Folder", PluginFolder+"smk64t\\sourcemod-1.7.3-git5301");
+		Compilator_Folder = inifile.ReadString("Compiler", "Compilator_Folder","smk64t\\sourcemod-1.7.3-git5301");
 		CheckFolderString(ref Compilator_Folder);		
 		//Если Compilator_Folder не содержит в начале строки ?:\ или \ или \\, то дополнить путь PluginFolder
-		Compilator_Folder=PluginFolder+Compilator_Folder;
+		Compilator_Folder=INIFolder+Compilator_Folder;
 		
 		Plugin_Author = inifile.ReadString("Compiler", "Plugin_Author","");
 		rcon_password = inifile.ReadString("Server", "rcon_password","");
 		SRCDS_Folder = inifile.ReadString("Server", "SRCDS_Folder","");		
+		CheckFolderString(ref SRCDS_Folder);
 		rcon_Address = inifile.ReadString("Server", "rcon_Address","");		
 		Compilator_Include_Folders = inifile.ReadString("Compiler", "Include", Compilator_Include_Folders);
 		rcon_Port = inifile.ReadInteger("Server", "rcon_port", rcon_Port);
@@ -246,14 +302,17 @@ namespace MySMcompiler
 			Plugin_Author = inifile.LoadString("Compiler", "Plugin_Author", "");
 
 		}*/
+		#if DEBUG
 		Debug.Print("Compilator\t\t=" + Compilator);
 		Debug.Print("Compilator_Folder\t=" + Compilator_Folder);
 		Debug.Print("Compilator_Params\t=" + Compilator_Params);
 		Debug.Print("Compilator_Include_Folders=" + Compilator_Include_Folders);
 		Debug.Print("SRCDS_Folder=" + SRCDS_Folder);
+		Console.WriteLine("SRCDS_Folder\t{0}",SRCDS_Folder);
 		Debug.Print("rcon_address=" + rcon_Address);
 		Debug.Print("rcon_port=" + rcon_Port);
 		Debug.Print("rcon_password=" + rcon_password);
+		#endif
 
 		//[Compiler]
 		//Compilator="spcomp.exe"
@@ -288,6 +347,31 @@ namespace MySMcompiler
 			return Minuend.Substring(Subtrahend.Length);
 		else
 			return Minuend;
+	}
+	private static void CopyDirectory(string sourcePath, string destinationPath)
+	{
+		//-----------------------------------------------------------------------
+		System.IO.DirectoryInfo sourceDirectoryInfo = new System.IO.DirectoryInfo(sourcePath);
+
+		// If the destination folder don't exist then create it
+		if (!System.IO.Directory.Exists(destinationPath)) {
+			System.IO.Directory.CreateDirectory(destinationPath);
+		}
+
+		System.IO.FileSystemInfo fileSystemInfo = null;
+		foreach (FileSystemInfo fileSystemInfo_loopVariable in sourceDirectoryInfo.GetFileSystemInfos()) {
+			fileSystemInfo = fileSystemInfo_loopVariable;
+			string destinationFileName = System.IO.Path.Combine(destinationPath, fileSystemInfo.Name);
+
+			// Now check whether its a file or a folder and take action accordingly
+			if (fileSystemInfo is System.IO.FileInfo) {
+				System.IO.File.Copy(fileSystemInfo.FullName, destinationFileName, true);Console.WriteLine(
+					FolderDifference(sourcePath,PluginFolder)+"\\"+fileSystemInfo);
+			} else {
+				// Recursively call the mothod to copy all the neste folders
+				CopyDirectory(fileSystemInfo.FullName, destinationFileName);
+			}
+		}
 	}
 
 	}

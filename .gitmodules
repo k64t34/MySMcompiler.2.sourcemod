@@ -1,0 +1,3 @@
+[submodule "lib/SourceRcon"]
+	path = lib/SourceRcon
+	url = https://github.com/aiusepsi/SourceRcon
