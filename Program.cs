@@ -39,7 +39,7 @@ namespace MySMcompiler
 		//Ini file fields
 		static string Compilator = "spcomp.exe";
 		static string Compilator_Folder;
-		static string Compilator_Params = "vasym=\"1\" -O2";
+		static string Compilator_Params = "";//"vasym=\"1\" -O2";
 		static string Compilator_Include_Folders = "smk64t\\scripting\\include";				
 		static string Plugin_Author;
 		static string rcon_Address = "127.0.0.1";
@@ -183,7 +183,7 @@ namespace MySMcompiler
 				Compilator_Params + " -e" + DiffSourceFolder+SourceFile + ".err" + 
 				" -D" + INIFolder + 
 				" -o" + SMXFolder + SourceFile + 
-				" -w213" +
+				/*" -w213" +*/
 				Compilator_Include_Folders;
 			
 			Console.WriteLine(compiler.StartInfo.FileName);				
@@ -311,6 +311,8 @@ namespace MySMcompiler
 		rcon_Address = inifile.ReadString("Server", "rcon_Address","");		
 		Compilator_Include_Folders = inifile.ReadString("Compiler", "Include", Compilator_Include_Folders);
 		rcon_Port = inifile.ReadInteger("Server", "rcon_port", rcon_Port);
+		Compilator_Params = inifile.ReadString("Compiler", "Parameters","");		
+		
 		
 		
 		
