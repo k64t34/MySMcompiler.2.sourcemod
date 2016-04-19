@@ -6,3 +6,4 @@
 -->If not exits plugins, then make it folder
 --> after restart plugin in server show plugins status
 --> Наладить распознование абсолютных и относительных путей 
+--> Отображать как абсольные так и относительные пути
