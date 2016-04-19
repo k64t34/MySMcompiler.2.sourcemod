@@ -14,7 +14,7 @@
  * Time: 22:25
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+ */ 
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -52,7 +52,7 @@ namespace MySMcompiler
  
 		public static void Main(string[] args)
 		{
-			string title="Sourcemod Compiler Helper ver"+(FileVersionInfo.GetVersionInfo((Assembly.GetExecutingAssembly()).Location)).ProductVersion+": ";
+			string title="Sourcemod Compiler Helper ver "+(FileVersionInfo.GetVersionInfo((Assembly.GetExecutingAssembly()).Location)).ProductVersion+": ";
 			Console.Title=title;
 			Console.ForegroundColor=ConsoleColor.Cyan;
 			Console.WriteLine(title);
@@ -324,8 +324,13 @@ namespace MySMcompiler
 	{
 		IniParser inifile = new IniParser(ConfigFile);
 		Compilator_Folder = inifile.ReadString("Compiler", "Compilator_Folder",mySMcomp_Folder/*"smk64t\\sourcemod-1.7.3-git5301"*/);
-		CheckFolderString(ref Compilator_Folder, PluginFolder);		
+		Console.WriteLine("Compilator_Folder={0}",Compilator_Folder);
+		Console.WriteLine("PluginFolder={0}",PluginFolder);
+		Console.WriteLine("ParentPluginFolder={0}",ParentFolder(PluginFolder));
+		CheckFolderString(ref Compilator_Folder, ParentFolder(PluginFolder));
+		
 		//Если Compilator_Folder не содержит в начале строки ?:\ или \ или \\, то дополнить путь PluginFolder	Compilator_Folder=INIFolder+Compilator_Folder;
+		Console.WriteLine("Compilator_Folder={0}",Compilator_Folder);
 		
 		Plugin_Author = inifile.ReadString("Compiler", "Plugin_Author","");
 		rcon_password = inifile.ReadString("Server", "rcon_password","");
@@ -429,6 +434,13 @@ namespace MySMcompiler
 			}
 		}
 	}
-
+	public static string ParentFolder(string Folder)
+	{
+		Folder.TrimEnd(new char[]{'\\'});
+		//if (Folder.EndsWith("\\")) Folder.Remove(Folder.Length-2,1);
+		Console.WriteLine("Folder=\t\t\"{0}\"",Folder);		
+		Console.WriteLine("ParentFolder=\t{0}",System.IO.Directory.GetParent(Folder).ToString());		
+		return System.IO.Directory.GetParent(Folder).ToString();
+	}
 	}
 }
