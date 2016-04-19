@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Globalization;
  
 public class IniParser
 {
@@ -30,6 +31,18 @@ public class IniParser
     public String ReadString(String SectionName , String KeyName, String DefaultValue)
     {
         return ReadValue(SectionName , KeyName);
+    }
+    public bool ReadBool(String SectionName , String KeyName, bool DefaultValue)
+    {
+    bool ReadBoolValue=DefaultValue;	
+    string keyvalue=ReadValue(SectionName , KeyName);    
+    if (String.Compare(keyvalue,"true",true)==0) ReadBoolValue=true;
+    else if (String.Compare(keyvalue,"Yes",true)==0) ReadBoolValue=true;
+    else if (String.Compare(keyvalue,"1",true)==0) ReadBoolValue=true;
+    else if (String.Compare(keyvalue,"false",true)==0) ReadBoolValue=false;
+    else if (String.Compare(keyvalue,"no",true)==0) ReadBoolValue=false;
+    else if (String.Compare(keyvalue,"0",true)==0) ReadBoolValue=false;
+    return ReadBoolValue;
     }
     public int ReadInteger(String SectionName , String KeyName, int DefaultValue)
     {

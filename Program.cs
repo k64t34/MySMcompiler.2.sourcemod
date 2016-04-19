@@ -47,6 +47,7 @@ namespace MySMcompiler
 		static string rcon_password;		
 		static string SRCDS_Folder;		
 		static string SMXFolder="game\\addons\\sourcemod\\plugins\\";
+		static bool MapReload=false; 
 		
  
 		public static void Main(string[] args)
@@ -138,9 +139,9 @@ namespace MySMcompiler
 					}
 			}
 			//
-			//Create include file
+			//Create include file datetime.inc
 			//	
-			string curDate=DateTime.Now.ToString();
+			string curDate=DateTime.Now.ToString("dd.MM.yy HH:mm:ss");
 			System.IO.StreamWriter f_inc = new System.IO.StreamWriter(SourceFolder + "datetimecomp.inc", false);
 			f_inc.WriteLine("#if defined DEBUG");
 			f_inc.WriteLine("\t#define PLUGIN_DATETIME \"" + curDate + "\"");
@@ -161,14 +162,18 @@ namespace MySMcompiler
 			if (File.Exists(PluginFolder+SMXFolder+SourceFile+".smx"))File.Delete(PluginFolder+SMXFolder+SourceFile+".smx");
 			
 			//Test compiler file exist
-			if (!File.Exists(Compilator_Folder + Compilator)) 
-			{
-				Console.ForegroundColor=ConsoleColor.Red;
-				Console.WriteLine("ERR: File compiler\t" + Compilator_Folder + Compilator + " not found");
+			if (!File.Exists(Compilator_Folder + Compilator))
+			{	Console.ForegroundColor=ConsoleColor.Red;
+				if (Directory.Exists(Compilator_Folder))				
+				Console.WriteLine("ERR: File compiler {0} not found in folder {1}",Compilator,Compilator_Folder);					
+				else
+				Console.WriteLine("ERR: Folder {0} with compiler {1} not found.",Compilator_Folder,Compilator);
 				Console.ResetColor();
 				ScriptFinish(true);
 				System.Environment.Exit(4);
 			}
+			//Test compiled folder exist
+			if (!Directory.Exists(PluginFolder+SMXFolder))	System.IO.Directory.CreateDirectory(PluginFolder+SMXFolder);		
 			//Compiling
 			Console.ForegroundColor=ConsoleColor.White;
 			Console.WriteLine("\nRun compiling\n");
@@ -193,12 +198,22 @@ namespace MySMcompiler
 			compiler.Start();
 			Console.WriteLine(compiler.StandardOutput.ReadToEnd());
 			compiler.WaitForExit();	
-			//ERRORLEVEL			
-			if (compiler.ExitCode > 0)
+			//ERRORLEVEL
+			ConsoleColor ERRORLEVEL_color;
+			if (compiler.ExitCode>0)ERRORLEVEL_color=ConsoleColor.Red;
+			if (File.Exists(SourceFolder+SourceFile+".err")) ERRORLEVEL_color=ConsoleColor.Yellow;
+			else ERRORLEVEL_color=ConsoleColor.Green;
+			Console.ForegroundColor=ERRORLEVEL_color;
+			Console.WriteLine(compiler.ExitCode);
+			Console.ResetColor();
+			if (File.Exists(SourceFolder+SourceFile+".err"))
 			{				
-				Console.WriteLine(compiler.ExitCode);
-				Console.ForegroundColor=ConsoleColor.Red;
+				Console.ForegroundColor=ERRORLEVEL_color;
+				if (compiler.ExitCode>0)					
 				Console.WriteLine("ERR: "+SourceFolder+SourceFile+".err\n--------------------------------------------------------");
+				else
+				Console.WriteLine("WARN: "+SourceFolder+SourceFile+".err\n--------------------------------------------------------");
+				
 				Console.ResetColor();
 				try 
 				{					
@@ -211,7 +226,7 @@ namespace MySMcompiler
 	        	catch (Exception e)
 	        	{
 	        		Console.ForegroundColor=ConsoleColor.Red;
-	        	    Console.WriteLine("The file could not be read"+SourceFolder+SourceFile+".err");
+	        	    Console.WriteLine("The file could not be read "+SourceFolder+SourceFile+".err");
 	        	    Console.WriteLine(e.Message);
 	        	    Console.ResetColor();
 	        	}
@@ -249,12 +264,22 @@ namespace MySMcompiler
 					Thread.Sleep(10);
 				}
 				RCon.ServerCommand("status");
-				Thread.Sleep(100);
-				RCon.ServerCommand("sm plugins unload "+SourceFile);
-				Thread.Sleep(100);
-				RCon.ServerCommand("sm plugins load "+SourceFile);
-				Thread.Sleep(100);
-				Thread.Sleep(100);
+				Thread.Sleep(1000);
+				if (MapReload)
+				{
+				Console.WriteLine("Restart server");	
+				RCon.ServerCommand("_restart");	
+				Thread.Sleep(5000);
+				}
+				else 
+				{
+					RCon.ServerCommand("sm plugins unload "+SourceFile);
+					Thread.Sleep(1000);
+					RCon.ServerCommand("sm plugins load "+SourceFile);
+				}
+				Thread.Sleep(1000);				
+				RCon.ServerCommand("sm plugins info "+SourceFile);				
+				Thread.Sleep(1000);
 				/*Console.Write("Press Esc key to exit . . . ");			
 				ConsoleKeyInfo k=Console.ReadKey();
 				while (k.Key!= ConsoleKey.Escape)
@@ -297,17 +322,16 @@ namespace MySMcompiler
 	
 	public static void GetConfigFile(string ConfigFile)
 	{
-
 		IniParser inifile = new IniParser(ConfigFile);
-		Compilator_Folder = inifile.ReadString("Compiler", "Compilator_Folder","smk64t\\sourcemod-1.7.3-git5301");
-		CheckFolderString(ref Compilator_Folder);		
-		//Если Compilator_Folder не содержит в начале строки ?:\ или \ или \\, то дополнить путь PluginFolder
-		Compilator_Folder=INIFolder+Compilator_Folder;
+		Compilator_Folder = inifile.ReadString("Compiler", "Compilator_Folder",mySMcomp_Folder/*"smk64t\\sourcemod-1.7.3-git5301"*/);
+		CheckFolderString(ref Compilator_Folder, PluginFolder);		
+		//Если Compilator_Folder не содержит в начале строки ?:\ или \ или \\, то дополнить путь PluginFolder	Compilator_Folder=INIFolder+Compilator_Folder;
 		
 		Plugin_Author = inifile.ReadString("Compiler", "Plugin_Author","");
 		rcon_password = inifile.ReadString("Server", "rcon_password","");
-		SRCDS_Folder = inifile.ReadString("Server", "SRCDS_Folder","");		
+		SRCDS_Folder = inifile.ReadString("Server", "SRCDS_Folder","");				
 		CheckFolderString(ref SRCDS_Folder);
+		MapReload = inifile.ReadBool("Server", "MapReload",false);
 		rcon_Address = inifile.ReadString("Server", "rcon_Address","");		
 		Compilator_Include_Folders = inifile.ReadString("Compiler", "Include", Compilator_Include_Folders);
 		rcon_Port = inifile.ReadInteger("Server", "rcon_port", rcon_Port);
@@ -332,7 +356,9 @@ namespace MySMcompiler
 			Plugin_Author = inifile.LoadString("Compiler", "Plugin_Author", "");
 
 		}*/
+		Console.WriteLine(MapReload);
 		#if DEBUG
+		Debug.Print("MapReload\t\t=" + MapReload);
 		Debug.Print("Compilator\t\t=" + Compilator);
 		Debug.Print("Compilator_Folder\t=" + Compilator_Folder);
 		Debug.Print("Compilator_Params\t=" + Compilator_Params);
