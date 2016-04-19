@@ -356,7 +356,7 @@ namespace MySMcompiler
 			Plugin_Author = inifile.LoadString("Compiler", "Plugin_Author", "");
 
 		}*/
-		Console.WriteLine(MapReload);
+		
 		#if DEBUG
 		Debug.Print("MapReload\t\t=" + MapReload);
 		Debug.Print("Compilator\t\t=" + Compilator);
