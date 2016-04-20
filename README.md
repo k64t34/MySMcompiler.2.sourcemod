@@ -8,7 +8,7 @@ SourceMod compiler helper.
 ##Changelog 
 * Unreleased 
 
- 1. Added.двойные кавычки в пути -D.
+ - Added.двойные кавычки в пути -D.
 
 * 0.4
 
