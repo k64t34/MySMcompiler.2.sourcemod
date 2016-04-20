@@ -105,10 +105,10 @@ namespace MySMcompiler
 			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
 			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();			
 			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
+			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
 			PluginFolder=INIFolder;
 			CheckFolderString(ref PluginFolder);
 			Console.WriteLine("Plugin Folder\t"+ PluginFolder);
-			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
 			CheckFolderString(ref INIFolder);
 			Debug.Print("INIFolder=" + INIFolder);
 			INIFile=INIFolder+INIFile;
@@ -161,8 +161,7 @@ namespace MySMcompiler
 			f_inc.Close();
 			
 			//Delete old err smx files
-			if (!File.Exists(SourceFile+".err"))File.Delete(SourceFile+".err");
-			if (File.Exists(PluginFolder+SMXFolder+SourceFile+".smx"))File.Delete(PluginFolder+SMXFolder+SourceFile+".smx");
+			if (!File.Exists(SourceFile+".err"))File.Delete(SourceFile+".err");			
 			
 			//Test compiler file exist
 			if (!File.Exists(Compilator_Folder + Compilator))
@@ -175,8 +174,11 @@ namespace MySMcompiler
 				ScriptFinish(true);
 				System.Environment.Exit(4);
 			}
-			//Test compiled folder exist
-			if (!Directory.Exists(PluginFolder+SMXFolder))	System.IO.Directory.CreateDirectory(PluginFolder+SMXFolder);		
+			//Test compiled folder exist, delete old smx files
+			if (Directory.Exists(PluginFolder+SMXFolder))
+				{if ( File.Exists(PluginFolder+SMXFolder+SourceFile+".smx"))File.Delete(PluginFolder+SMXFolder+SourceFile+".smx");}
+			else
+				{System.IO.Directory.CreateDirectory(PluginFolder+SMXFolder);}
 			//Compiling
 			Console.ForegroundColor=ConsoleColor.White;
 			Console.WriteLine("\nRun compiling\n");
@@ -197,7 +199,7 @@ namespace MySMcompiler
 			Console.WriteLine(buffArg);
 			compiler.StartInfo.Arguments+=buffArg;
 			
-			buffArg=" -D\"" + TrimEndBackslash(ParentFolder(PluginFolder))+"\"";			
+			buffArg=" -D\"" + TrimEndBackslash(PluginFolder)+"\"";			
 			Console.WriteLine(buffArg);
 			compiler.StartInfo.Arguments+=buffArg;
 			

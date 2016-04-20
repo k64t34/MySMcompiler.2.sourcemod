@@ -1,3 +1,6 @@
 C:\Users\skorik\Documents\SourceMod\MySMcompiler.2\bin\Release\MySMcompiler2.exe
 C:\Users\skorik\Documents\SourceMod\MySMcompiler.2\obj\Release\ResolveAssemblyReference.cache
 C:\Users\skorik\Documents\SourceMod\MySMcompiler.2\obj\Release\MySMcompiler2.exe
+C:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\bin\Release\MySMcompiler2.exe
+C:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Andrew\Documents\GitHub\SourceModPlugins\MySMcompiler.2\obj\Release\MySMcompiler2.exe
