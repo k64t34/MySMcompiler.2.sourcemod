@@ -159,7 +159,8 @@ namespace MySMcompiler
 			f_inc.WriteLine("\t#define PLUGIN_AUTHOR \"" + Plugin_Author + "\"");
 			f_inc.WriteLine("#endif");	
 			f_inc.Close();
-			//Delete old err smx files				
+			
+			//Delete old err smx files
 			if (!File.Exists(SourceFile+".err"))File.Delete(SourceFile+".err");
 			if (File.Exists(PluginFolder+SMXFolder+SourceFile+".smx"))File.Delete(PluginFolder+SMXFolder+SourceFile+".smx");
 			
@@ -181,24 +182,57 @@ namespace MySMcompiler
 			Console.WriteLine("\nRun compiling\n");
 			Console.ResetColor();
 			Process compiler = new Process();
-			compiler.StartInfo.FileName = Compilator_Folder + Compilator;
-			compiler.StartInfo.UseShellExecute=false;	//https://msdn.microsoft.com/ru-ru/library/system.diagnostics.processstartinfo.workingdirectory(v=vs.110).aspx
+			compiler.StartInfo.RedirectStandardOutput = true;
+			compiler.StartInfo.RedirectStandardError = true;
+			compiler.StartInfo.CreateNoWindow = true;
 			compiler.StartInfo.WorkingDirectory=PluginFolder;
+			compiler.StartInfo.WorkingDirectory=SourceFolder;
+			Console.WriteLine("WorkingDirectory=\t{0}",compiler.StartInfo.WorkingDirectory);
+			compiler.StartInfo.FileName = Compilator_Folder + Compilator;
+			Console.WriteLine(compiler.StartInfo.FileName);
+			compiler.StartInfo.UseShellExecute=false;	//https://msdn.microsoft.com/ru-ru/library/system.diagnostics.processstartinfo.workingdirectory(v=vs.110).aspx			
 			string DiffSourceFolder=FolderDifference(SourceFolder,INIFolder);
-			compiler.StartInfo.Arguments =
-				DiffSourceFolder + SourceFile + ".sp " +
-				Compilator_Params + " -e" + DiffSourceFolder+SourceFile + ".err" + 
-				" -D" + INIFolder + 
-				" -o" + SMXFolder + SourceFile + 
-				/*" -w213" +*/
-				Compilator_Include_Folders;
+			string buffArg;
+			buffArg=" "+DiffSourceFolder + SourceFile + ".sp";
+			Console.WriteLine(buffArg);
+			compiler.StartInfo.Arguments+=buffArg;
 			
-			Console.WriteLine(compiler.StartInfo.FileName);				
+			buffArg=" -D\"" + TrimEndBackslash(ParentFolder(PluginFolder))+"\"";			
+			Console.WriteLine(buffArg);
+			compiler.StartInfo.Arguments+=buffArg;
+			
+			buffArg=" -e" + DiffSourceFolder+SourceFile + ".err";
+			Console.WriteLine(buffArg);
+			compiler.StartInfo.Arguments+=buffArg;
+			
+			buffArg=" -o" + SMXFolder + SourceFile+".smx";
+			Console.WriteLine(buffArg);
+			compiler.StartInfo.Arguments+=buffArg;
+			
+			Console.WriteLine(" {0}",Compilator_Params);
+			compiler.StartInfo.Arguments+=" "+Compilator_Params;
+			
+			Console.WriteLine(Compilator_Include_Folders);
+			compiler.StartInfo.Arguments+=Compilator_Include_Folders;
+			
 			Console.WriteLine(compiler.StartInfo.Arguments);				
 			compiler.StartInfo.UseShellExecute = false;
 			compiler.StartInfo.RedirectStandardOutput = true;
-			compiler.Start();
-			Console.WriteLine(compiler.StandardOutput.ReadToEnd());
+			Console.WriteLine();
+			try 
+				{					
+			        compiler.Start();
+            	}        	
+        	catch (Exception e)
+	        	{
+	        		Console.ForegroundColor=ConsoleColor.Red;	        	    
+	        	    Console.WriteLine(e.Message);
+	        	    Console.ResetColor();
+	        	}			
+			string output =compiler.StandardOutput.ReadToEnd();
+			string err =compiler.StandardError.ReadToEnd();
+			Console.WriteLine(output);			
+			Console.WriteLine(err);
 			compiler.WaitForExit();	
 			//ERRORLEVEL
 			ConsoleColor ERRORLEVEL_color;
@@ -235,7 +269,12 @@ namespace MySMcompiler
 	        	}
 	        	ScriptFinish(true);
 				System.Environment.Exit(0);
-			}	        
+			}
+			if (compiler.ExitCode>0)
+			{
+				ScriptFinish(true);
+				System.Environment.Exit(0);			
+			}
 			//
 			// Copy to server
 			//
@@ -434,6 +473,8 @@ namespace MySMcompiler
 			}
 		}
 	}
+	public static string TrimEndBackslash(string Folder){return Folder.TrimEnd(new char[]{'\\'});}
+	
 	public static string ParentFolder(string Folder)
 	{
 		//Folder=Folder.TrimEnd(new char[]{'\\'});
