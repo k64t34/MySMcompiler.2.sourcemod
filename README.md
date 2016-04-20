@@ -6,7 +6,7 @@ SourceMod compiler helper.
 
 ##VER
 
--0.4
+*0.4
 
 1.Use hard datetime format in datetime.inc to prevent locale isses  like "Map_Elections" (╨Я╤В, 15.╨░╨┐╤А.2016 16:00:14) by KOM64T.
 
