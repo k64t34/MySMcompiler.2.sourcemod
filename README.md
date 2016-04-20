@@ -8,8 +8,7 @@ SourceMod compiler helper.
  
 * 0.4
 
-Use hard datetime format in datetime.inc to prevent locale isses  like "Map_Elections" (╨Я╤В, 15.╨░╨┐╤А.2016 16:00:14) by KOM64T.
-
+Use hard datetime format in datetime.inc to prevent locale isses  like "Map_Elections" (╨Я╤В, 15.╨░╨┐╤А.2016 16:00:14) by KOM64T. 
 Установлен жесткий формат даты и времени для избежания проблем с форматом локализации.
 
 Add parameter MapReload. If MapReload=true, then server will _restart after plugin copy to server. 
