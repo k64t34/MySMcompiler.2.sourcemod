@@ -6,12 +6,12 @@
 SourceMod compiler helper.
 
 ##Changelog
-### [Unreleased]
-#### Added
-- двойные кавычки в пути -D.
+ * [Unreleased]
+  - Added
+   1.двойные кавычки в пути -D.
 
  
-### 0.4
+ * 0.4
 
 Use hard datetime format in datetime.inc to prevent locale isses  like "Map_Elections" (╨Я╤В, 15.╨░╨┐╤А.2016 16:00:14) by KOM64T. 
 Установлен жесткий формат даты и времени для избежания проблем с форматом локализации.
@@ -22,7 +22,7 @@ Add parameter MapReload. If MapReload=true, then server will _restart after plug
 
 Add show plugin info after restart plugin in server.
 
- ### 0.3 1st Realese
+ * 0.3 1st Realese
 
 
 ##Plans
