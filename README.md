@@ -5,7 +5,11 @@
 
 SourceMod compiler helper.
 
-##VER
+##Changelog
+### [Unreleased]
+#### Added
+- zh-CN and zh-TW translations from @tianshuo.
+- de translation from @mpbzh.
  
 * 0.4
 
@@ -29,5 +33,22 @@ Add show plugin info after restart plugin in server.
 - [ ] Получать лог с сервера для слежения за плагинами 
 - [ ] Добавить консоль сервера
 - [ ] При отсутствии действий в окне - закрыть через таймаут
+- 
+
+```sh
+
+<folder>
+ ├── game<plugin_folder>       # `10-simple` бандл в технологии `bemjson.js`
+       ├── addons
+              ├── sourcemod
+ └── mycmp.ini                 # `параметры компилятора
+```
  
 https://help.github.com/articles/basic-writing-and-formatting-syntax/
+http://keepachangelog.com/ru/
+Added для новых функций.
+Changed для изменений в существующей функциональности.
+Deprecated для функциональности, которая будет удалена в следующих версиях.
+Removed для функциональности, которая удалена в этой версии.
+Fixed для любых исправлений.
+Security 
