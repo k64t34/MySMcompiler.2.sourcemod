@@ -2,7 +2,6 @@
 // дублировние  консоли ссервера
 
 //EXT1 - Изменить проверку файла, если указан не полный путь к файлу а тольк имя
-//EXT2 - Включить в ScriptFinish сообщение и код возврата
 //EXT3 - Рекурсивный поиск INI файла вверх и в стороны.
 //EXT4 - Проверять расширения
 //
@@ -14,7 +13,7 @@
  * Time: 22:25
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */ 
+ */
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -22,11 +21,8 @@ using System.Net;
 using System.Threading;
 using System.Reflection;
 
-
 namespace MySMcompiler
-{
-	
-	
+{	
 	class Program
 	{
 		//Global 
@@ -36,6 +32,8 @@ namespace MySMcompiler
 		static string INIFile="smcmphlp.ini"; //INI file
 		static string PluginFolder; //Base project folder with .git 
 		static string INIFolder; //path INI file		
+		//enum Plugin_Folder_Structure {Singl=0,Strucure_1=1}; //List possible plugins folder structure
+		//Plugin_Folder_Strucure plstr=Plugin_Folder_Structure.Strucure_1;  //using plugins folder structure
 		//Ini file fields
 		static string Compilator = "spcomp.exe";
 		static string Compilator_Folder;
@@ -48,10 +46,16 @@ namespace MySMcompiler
 		static string SRCDS_Folder;		
 		static string SMXFolder="game\\addons\\sourcemod\\plugins\\";
 		static bool MapReload=false; 
-		
- 
+		/*public struct Plugin_folder 
+		{
+    		public string SMXFolder;
+		}
+		//string[] weekDays = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+		//string[,] plugfolder = new string [2,2]{ {"Sun", "Mon"},{"Tue", "Wed"}};
+		static Plugin_folder[] plugfolder = new Plugin_folder[2];*/
 		public static void Main(string[] args)
 		{
+			//plugfolder[0].SMXFolder="";
 			string title="Sourcemod Compiler Helper ver "+(FileVersionInfo.GetVersionInfo((Assembly.GetExecutingAssembly()).Location)).ProductVersion+": ";
 			Console.Title=title;
 			Console.ForegroundColor=ConsoleColor.Cyan;
@@ -76,19 +80,16 @@ namespace MySMcompiler
 			}			
 			Console.Title = title + " " + args[0] + " "+DateTime.Now.ToString();
 			SourceFile = args[0];			
-			Debug.Print("SourceFile=" + SourceFile);
-			Console.WriteLine("Argumets \t"+ SourceFile);	
-			
+			Console.WriteLine("Argumets \t"+ SourceFile);			
 			//EXT1
 			if (!File.Exists(SourceFile))
 			{
 				Console.ForegroundColor=ConsoleColor.Red;
-				Console.WriteLine("ERR: File \t\t"+SourceFile+" not found");
+				Console.WriteLine("ERR: File \""+SourceFile+"\" not found");
 				Console.ResetColor();
 				ScriptFinish(true);
 				System.Environment.Exit(1);
-			}			
-			
+			}
 			SourceFolder=System.IO.Directory.GetParent(SourceFile).ToString()+"\\";
 			CheckFolderString(ref SourceFolder);
 			SourceFile =Path.GetFileNameWithoutExtension(SourceFile);
@@ -109,10 +110,11 @@ namespace MySMcompiler
 			Console.WriteLine("Plugin Folder\t"+ PluginFolder);
 			INIFolder=System.IO.Directory.GetParent(INIFolder).ToString();
 			CheckFolderString(ref INIFolder);
-			Debug.Print("INIFolder=" + INIFolder);					
+			Debug.Print("INIFolder=" + INIFolder);
 			INIFile=INIFolder+INIFile;
 			if (!File.Exists(INIFile))
 			{
+				
 				Console.ForegroundColor=ConsoleColor.Red;
 				Console.WriteLine("ERR:INI File \t"+INIFile+" not found");
 				Console.ResetColor();
@@ -201,8 +203,9 @@ namespace MySMcompiler
 			//ERRORLEVEL
 			ConsoleColor ERRORLEVEL_color;
 			if (compiler.ExitCode>0)ERRORLEVEL_color=ConsoleColor.Red;
+			else{
 			if (File.Exists(SourceFolder+SourceFile+".err")) ERRORLEVEL_color=ConsoleColor.Yellow;
-			else ERRORLEVEL_color=ConsoleColor.Green;
+			else ERRORLEVEL_color=ConsoleColor.Green;}
 			Console.ForegroundColor=ERRORLEVEL_color;
 			Console.WriteLine(compiler.ExitCode);
 			Console.ResetColor();
@@ -323,10 +326,7 @@ namespace MySMcompiler
 	public static void GetConfigFile(string ConfigFile)
 	{
 		IniParser inifile = new IniParser(ConfigFile);
-		Compilator_Folder = inifile.ReadString("Compiler", "Compilator_Folder",mySMcomp_Folder/*"smk64t\\sourcemod-1.7.3-git5301"*/);
-		Console.WriteLine("Compilator_Folder={0}",Compilator_Folder);
-		Console.WriteLine("PluginFolder={0}",PluginFolder);
-		Console.WriteLine("ParentPluginFolder={0}",ParentFolder(PluginFolder));
+		Compilator_Folder = inifile.ReadString("Compiler", "Compilator_Folder",mySMcomp_Folder/*"smk64t\\sourcemod-1.7.3-git5301"*/);		
 		CheckFolderString(ref Compilator_Folder, ParentFolder(PluginFolder));
 		
 		//Если Compilator_Folder не содержит в начале строки ?:\ или \ или \\, то дополнить путь PluginFolder	Compilator_Folder=INIFolder+Compilator_Folder;
@@ -436,11 +436,12 @@ namespace MySMcompiler
 	}
 	public static string ParentFolder(string Folder)
 	{
-		Folder.TrimEnd(new char[]{'\\'});
+		//Folder=Folder.TrimEnd(new char[]{'\\'});
 		//if (Folder.EndsWith("\\")) Folder.Remove(Folder.Length-2,1);
-		Console.WriteLine("Folder=\t\t\"{0}\"",Folder);		
-		Console.WriteLine("ParentFolder=\t{0}",System.IO.Directory.GetParent(Folder).ToString());		
-		return System.IO.Directory.GetParent(Folder).ToString();
+		//Console.WriteLine("Folder=\t\t\"{0}\"",Folder);		
+		//Console.WriteLine("ParentFolder=\t{0}",System.IO.Directory.GetParent(Folder).ToString());		
+		//Console.WriteLine("ParentFolder=\t{0}",Path.GetDirectoryName(Folder));		
+		return System.IO.Directory.GetParent(Folder.TrimEnd(new char[]{'\\'})).ToString()+"\\";
 	}
 	}
 }
