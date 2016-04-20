@@ -8,8 +8,8 @@ SourceMod compiler helper.
 ##Changelog
 ### [Unreleased]
 #### Added
-- zh-CN and zh-TW translations from @tianshuo.
-- de translation from @mpbzh.
+- двойные кавычки в пути -D.
+
  
 * 0.4
 
@@ -38,10 +38,10 @@ Add show plugin info after restart plugin in server.
 ```sh
 
 <folder>
- ├── game<plugin_folder>       # `10-simple` бандл в технологии `bemjson.js`
-       ├── addons
-              ├── sourcemod
- └── mycmp.ini                 # `параметры компилятора
+ ├── game<plugin_folder>       # ``
+    ├── addons
+       ├── sourcemod
+ └── mycmp.ini                 # `параметры компилятора`
 ```
  
 https://help.github.com/articles/basic-writing-and-formatting-syntax/
