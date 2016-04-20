@@ -268,9 +268,7 @@ namespace MySMcompiler
 	        	    Console.WriteLine("The file could not be read "+SourceFolder+SourceFile+".err");
 	        	    Console.WriteLine(e.Message);
 	        	    Console.ResetColor();
-	        	}
-	        	ScriptFinish(true);
-				System.Environment.Exit(0);
+	        	}	        	
 			}
 			if (compiler.ExitCode>0)
 			{
@@ -281,7 +279,7 @@ namespace MySMcompiler
 			// Copy to server
 			//
 			Console.ForegroundColor=ConsoleColor.White;
-			Console.WriteLine("\nCopy files to server {0}\n",SRCDS_Folder);
+			Console.WriteLine("\nCopy files from {1} to server {0}\n",SRCDS_Folder,PluginFolder+"game");
 			Console.ResetColor();
 		    if (!Directory.Exists(SRCDS_Folder)) 
 		    {
@@ -291,7 +289,7 @@ namespace MySMcompiler
 				ScriptFinish(true);
 				System.Environment.Exit(0);
 			}
-			CopyDirectory(PluginFolder, SRCDS_Folder);			
+			CopyDirectory(PluginFolder+"game", SRCDS_Folder);			
 			//
 			// Reload plugin
 			//   
