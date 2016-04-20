@@ -5,10 +5,10 @@
 
 SourceMod compiler helper.
 
-##Changelog
- * [Unreleased]
-  - Added
-   1.двойные кавычки в пути -D.
+##Changelog 
+* Unreleased 
+
+-Added.двойные кавычки в пути -D.
 
  
  * 0.4
