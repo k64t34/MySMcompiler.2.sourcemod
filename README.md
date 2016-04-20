@@ -8,10 +8,9 @@ SourceMod compiler helper.
 ##Changelog 
 * Unreleased 
 
--Added.двойные кавычки в пути -D.
+ 1. Added.двойные кавычки в пути -D.
 
- 
- * 0.4
+  * 0.4
 
 Use hard datetime format in datetime.inc to prevent locale isses  like "Map_Elections" (╨Я╤В, 15.╨░╨┐╤А.2016 16:00:14) by KOM64T. 
 Установлен жесткий формат даты и времени для избежания проблем с форматом локализации.
