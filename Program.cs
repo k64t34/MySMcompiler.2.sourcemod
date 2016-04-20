@@ -440,7 +440,16 @@ namespace MySMcompiler
 	{
 		s=s.Trim();
 		if (!s.EndsWith("\\")) s+="\\";
-		if (!s.StartsWith("\\") & !s.StartsWith("\\\\") & s.Substring(1,2)!=":\\") s=basepath+s;
+		if (s.StartsWith(".."))
+		{
+			s=s.Remove(0,3);
+			s=basepath+s;
+		}
+		else
+		{
+			if (!s.StartsWith("\\") & !s.StartsWith("\\\\") & s.Substring(1,2)!=":\\")
+				s=basepath+s;
+		}
 		
 	}
 	public static string FolderDifference(string Minuend  ,string Subtrahend)
