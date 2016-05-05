@@ -58,7 +58,7 @@ namespace MySMcompiler
 		public static void Main(string[] args)
 		{
 			//plugfolder[0].SMXFolder="";
-			string title="Sourcemod Compiler Helper ver "+(FileVersionInfo.GetVersionInfo((Assembly.GetExecutingAssembly()).Location)).ProductVersion+": ";
+			string title="Sourcemod Compiler Helper ver "+(FileVersionInfo.GetVersionInfo((Assembly.GetExecutingAssembly()).Location)).ProductVersion+": ";			
 			Console.Title=title;
 			Console.ForegroundColor=ConsoleColor.Cyan;
 			Console.WriteLine(title);
@@ -305,17 +305,29 @@ namespace MySMcompiler
 			SourceRcon.SourceRcon RCon = new SourceRcon.SourceRcon();
 			RCon.Errors += new SourceRcon.StringOutput(ErrorOutput);
 			RCon.ServerOutput += new SourceRcon.StringOutput(ConsoleOutput);
-			if (RCon.Connect(new IPEndPoint(IPAddress.Parse(rcon_Address), rcon_Port), rcon_password))
+			
+			try 
 			{
-				Console.WriteLine("Connected");
-				while(!RCon.Connected)
+				RCon.Connect(new IPEndPoint(IPAddress.Parse(rcon_Address), rcon_Port), rcon_password);
+				for (int i=0;i!=10;i++)
 				{
-					//Console.Write(".");
-					Thread.Sleep(10);
-					
-				}
-				RCon.ServerCommand("status");
 				Thread.Sleep(1000);
+				if (RCon.Connected) break;
+				}
+				
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message.ToString());
+			}			
+			//if (RCon.Connect(new IPEndPoint(IPAddress.Parse(rcon_Address), rcon_Port), rcon_password))
+			 if (RCon.Connected)
+			   {
+			 	Console.ForegroundColor=ConsoleColor.Green;								
+				Console.WriteLine("Connected");Console.ResetColor();
+				
+				RCon.ServerCommand("status");
+				Thread.Sleep(100);
 				if (MapReload)
 				{
 					Console.WriteLine("Restart server");	
@@ -324,9 +336,12 @@ namespace MySMcompiler
 				}
 				else 
 				{
+					Console.ForegroundColor=ConsoleColor.Green;				
+					Console.WriteLine("Reload plugin");Console.ResetColor();
 					RCon.ServerCommand("sm plugins unload "+SourceFile);
 					Thread.Sleep(1000);
 					RCon.ServerCommand("sm plugins load "+SourceFile);
+					Thread.Sleep(1000);
 				}
 				Thread.Sleep(1000);				
 				RCon.ServerCommand("sm plugins info "+SourceFile);				
@@ -349,9 +364,9 @@ namespace MySMcompiler
 				Console.ForegroundColor=ConsoleColor.Red;
 				Console.WriteLine("ERR: No connection.");
 				Console.ResetColor();
-			}
-			Thread.Sleep(1000);	
+			}			
 			RCon=null;
+			Thread.Sleep(1000);
 			ScriptFinish(true);
 			System.Environment.Exit(0);							
 			
@@ -366,8 +381,9 @@ namespace MySMcompiler
 	//****************************************************			
 	if (pause)
 		{
+		Console.ForegroundColor=ConsoleColor.White;
 		Console.WriteLine();
-		Console.Write("Press any key to exit . . . ");
+		Console.Write("Press any key to exit . . . ");Console.ResetColor();
 		DateTime timeoutvalue = DateTime.Now.AddSeconds(10);
 		while (DateTime.Now < timeoutvalue)
 			{
