@@ -20,6 +20,7 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Reflection;
+using System.Timers;
 
 namespace MySMcompiler
 {	
@@ -298,22 +299,27 @@ namespace MySMcompiler
 			Console.ForegroundColor=ConsoleColor.White;
 			Console.WriteLine("\nReload plugin {0} on server {1}:{2}\n",SourceFile,rcon_Address,rcon_Port);
 			Console.ResetColor();
+			
+			//make you class https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
 			SourceRcon.SourceRcon RCon = new SourceRcon.SourceRcon();
 			RCon.Errors += new SourceRcon.StringOutput(ErrorOutput);
 			RCon.ServerOutput += new SourceRcon.StringOutput(ConsoleOutput);
 			if (RCon.Connect(new IPEndPoint(IPAddress.Parse(rcon_Address), rcon_Port), rcon_password))
 			{
+				Console.WriteLine("Connected");
 				while(!RCon.Connected)
 				{
+					//Console.Write(".");
 					Thread.Sleep(10);
+					
 				}
 				RCon.ServerCommand("status");
 				Thread.Sleep(1000);
 				if (MapReload)
 				{
-				Console.WriteLine("Restart server");	
-				RCon.ServerCommand("_restart");	
-				Thread.Sleep(5000);
+					Console.WriteLine("Restart server");	
+					RCon.ServerCommand("_restart");	
+					Thread.Sleep(5000);
 				}
 				else 
 				{
@@ -360,12 +366,20 @@ namespace MySMcompiler
 		if (pause) {
 			Console.WriteLine();
 			Console.Write("Press any key to continue . . . ");
+			System.Timers.Timer Countdown =  new System.Timers.Timer(10000); //http://www.sources.ru/csharp/Working-with-Timer-Basics.html
+			Countdown.Elapsed += new ElapsedEventHandler(OnTimedEvent); //https://msdn.microsoft.com/ru-ru/library/system.timers.timer(v=vs.90).aspx
+			Countdown.Enabled = true;
 			Console.ReadKey(true);
 		}
 	}
-	
-	public static void GetConfigFile(string ConfigFile)
-	{
+	//****************************************************			
+	private static void OnTimedEvent(object source, ElapsedEventArgs e)    {
+	//****************************************************				
+        Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime);
+    }
+	//****************************************************			
+	public static void GetConfigFile(string ConfigFile)	{
+	//****************************************************				
 		IniParser inifile = new IniParser(ConfigFile);
 		Compilator_Folder = inifile.ReadString("Compiler", "Compilator_Folder",mySMcomp_Folder/*"smk64t\\sourcemod-1.7.3-git5301"*/);		
 		CheckFolderString(ref Compilator_Folder, ParentFolder(PluginFolder));
