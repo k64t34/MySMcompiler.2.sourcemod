@@ -22,6 +22,7 @@ using System.Threading;
 using System.Reflection;
 using System.Timers;
 
+
 namespace MySMcompiler
 {	
 	class Program
@@ -363,20 +364,18 @@ namespace MySMcompiler
 	//****************************************************	
 	public static void ScriptFinish(bool pause){
 	//****************************************************			
-		if (pause) {
-			Console.WriteLine();
-			Console.Write("Press any key to continue . . . ");
-			System.Timers.Timer Countdown =  new System.Timers.Timer(10000); //http://www.sources.ru/csharp/Working-with-Timer-Basics.html
-			Countdown.Elapsed += new ElapsedEventHandler(OnTimedEvent); //https://msdn.microsoft.com/ru-ru/library/system.timers.timer(v=vs.90).aspx
-			Countdown.Enabled = true;
-			Console.ReadKey(true);
+	if (pause)
+		{
+		Console.WriteLine();
+		Console.Write("Press any key to exit . . . ");
+		DateTime timeoutvalue = DateTime.Now.AddSeconds(10);
+		while (DateTime.Now < timeoutvalue)
+			{
+		    if (Console.KeyAvailable) break;
+		      Thread.Sleep(100);
+		    }
 		}
 	}
-	//****************************************************			
-	private static void OnTimedEvent(object source, ElapsedEventArgs e)    {
-	//****************************************************				
-        Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime);
-    }
 	//****************************************************			
 	public static void GetConfigFile(string ConfigFile)	{
 	//****************************************************				
