@@ -236,6 +236,8 @@ namespace MySMcompiler
 			Console.WriteLine(output);			
 			Console.WriteLine(err);
 			compiler.WaitForExit();	
+			//Delete datetime.inc
+			if (!File.Exists(SourceFolder + "datetimecomp.inc")) File.Delete(SourceFolder + "datetimecomp.inc");		
 			//ERRORLEVEL
 			ConsoleColor ERRORLEVEL_color;
 			if (compiler.ExitCode>0)ERRORLEVEL_color=ConsoleColor.Red;
