@@ -1,11 +1,15 @@
-# MySMcompiler.2021
-==================
+# SourceModCompilerHelper.2021
+---
+RU:Помощник для компиляции SourceMod плагинов. 
 
-Помощник для компиляции SourceMod плагинов.
-Helper for compiling Sourcemod plugins
+EN:Helper for compiling Sourcemod plugins
 
-Файловая структура каждого плагина должна быть следующей:
+1. Параметры коммандой строки запуска:
+MySMcompiler <path\file.sp>, где <path\file.sp> - имя файла с исходным кодом. 
 
+2.Файловой структуры проекта плагина
+1. Только один файл.Т.е. в проекте используется только один файл в формате *.sp.
+2. Файловая структура проекта плагина имеет следующий формат:
 ```sh
 
 <git folder> 
@@ -15,9 +19,11 @@ Helper for compiling Sourcemod plugins
  └── mycmp.ini                 # `параметры компилятора`
 ```
 
-
-Структура mycmp.ini 
-
+3. Конфигурация работы помощника
+Файл mycmp.ini 
+1. В папке с MySMcompiler.
+2. В корневой папке проекта плагина.
+```sh
 [Compiler]
 Compilator="spcomp.exe" 
 Compilator_Folder="..\smk64t\sourcemod-1.7.3-git5301\"
@@ -35,7 +41,7 @@ rcon_port=port
 rcon_password="password"
 SRCDS_Folder=path to folder in LAN
 SRCDS_FTP=path to game folder over ftp server
-
+```
 
 
 
@@ -83,3 +89,5 @@ Deprecated для функциональности, которая будет у
 Removed для функциональности, которая удалена в этой версии.
 Fixed для любых исправлений.
 Security 
+
+Usage: MySMcompiler <path\file.sp>
