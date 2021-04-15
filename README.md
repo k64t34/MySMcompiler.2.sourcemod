@@ -5,6 +5,15 @@
 
 SourceMod compiler helper.
 
+```sh
+
+<folder>
+ ├── game<plugin_folder>       # ``
+    ├── addons
+       ├── sourcemod
+ └── mycmp.ini                 # `параметры компилятора`
+```
+
 ##Changelog 
 * Unreleased 
 - fix rcon bug
@@ -39,14 +48,7 @@ Add show plugin info after restart plugin in server.
 - [x] При отсутствии действий в окне - закрыть через таймаут
 - 
 
-```sh
 
-<folder>
- ├── game<plugin_folder>       # ``
-    ├── addons
-       ├── sourcemod
- └── mycmp.ini                 # `параметры компилятора`
-```
  
 https://help.github.com/articles/basic-writing-and-formatting-syntax/
 http://keepachangelog.com/ru/
