@@ -1,18 +1,43 @@
-# MySMcompiler.2
+# MySMcompiler.2021
 ==================
 
 Помощник для компиляции SourceMod плагинов.
+Helper for compiling Sourcemod plugins
 
-SourceMod compiler helper.
+Файловая структура каждого плагина должна быть следующей:
 
 ```sh
 
-<folder>
- ├── game<plugin_folder>       # ``
+<git folder> 
+ ├── game<plugin_folder>       # `` например: dod,css,csgo
     ├── addons
        ├── sourcemod
  └── mycmp.ini                 # `параметры компилятора`
 ```
+
+
+Структура mycmp.ini 
+
+[Compiler]
+Compilator="spcomp.exe" 
+Compilator_Folder="..\smk64t\sourcemod-1.7.3-git5301\"
+Plugin_Author="Plugin_Author"
+;Parameters=
+Include=..\smk64t\scripting\include;..\smk64t\sourcemod-1.7.3-git5301\include;..\smk64t\smlib\scripting\include;
+;Always included:
+;sourcemod\include 
+;smK64t\scripting\include
+;smlib\scripting\include
+
+[Server]
+rcon_address=ip-address
+rcon_port=port
+rcon_password="password"
+SRCDS_Folder=path to folder in LAN
+SRCDS_FTP=path to game folder over ftp server
+
+
+
 
 ##Changelog 
 * Unreleased 
