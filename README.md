@@ -1,4 +1,6 @@
-# SourceModCompilerHelper.2021
+# SourceModCompilerHelper
+
+discontinued
 ---
 RU:Помощник для компиляции SourceMod плагинов. 
 
