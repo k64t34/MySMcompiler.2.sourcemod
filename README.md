@@ -2,6 +2,8 @@
 
 discontinued
 ---
+next generation https://github.com/k64t34/SourceModPawnCompilerPluginHelper
+---
 RU:Помощник для компиляции SourceMod плагинов. 
 
 EN:Helper for compiling Sourcemod plugins
